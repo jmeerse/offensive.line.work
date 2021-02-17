@@ -1,0 +1,36 @@
+seasons <- 2019:2020
+pbp <- map_df(seasons, function(x) {
+readRDS(
+url(
+paste0("https://raw.githubusercontent.com/guga31bb/nflfastR-data/master/data/play_by_play_",x,".rds")
+)
+)
+})
+
+pbp <- pbp %>%
+mutate(
+qbh_inc =
+case_when(qb_hit == 1 & incomplete_pass == 1 ~ "1")) %>%
+mutate(qb_int =
+case_when(interception == 1 & qb_hit == 1 ~ "1"))
+
+off.line.PIT <- pbp %>%
+group_by(week) %>%
+filter(season == 2020) %>%
+filter(posteam == "PIT") %>%
+filter(sack == 1 | tackled_for_loss == 1 | yards_gained <= 2 | qb_scramble == 1 | qb_hit == 1 | qbh_inc == 1 | qb_int == 1 ) %>%
+summarize(pit.total = n(),
+pit.sum.wpa = sum(wpa, na.rm = T),
+pit.avg.wpa = (pit.sum.wpa / pit.total) * 100)
+
+off.line.avg.NPIT <- pbp %>%
+group_by(week) %>%
+filter(season == 2020 & week <= 16 & posteam != "PIT") %>%
+filter(sack == 1 | tackled_for_loss == 1 | yards_gained <= 2 | qb_scramble == 1 | qb_hit == 1 | qbh_inc == 1 | qb_int == 1 ) %>%
+summarize(nfl.total = n(),
+nfl.avg.wpa = (sum(wpa, na.rm = T) / nfl.total) * 100)
+
+combined <- left_join(off.line.PIT, off.line.avg.NPIT, by = c("week" = "week"))
+combined <- combined %>%
+group_by(week) %>%
+mutate(pit.wpa = (pit.avg.wpa - nfl.avg.wpa) / 10)
