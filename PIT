@@ -23,15 +23,15 @@ off.line.PIT <- pbp %>%
 group_by(week) %>%
 filter(season == 2020 & week <= 17) %>%
 filter(posteam == "PIT") %>%
-filter(sack == 1 | tackled_for_loss == 1 | yards_gained <= 2 | qb_scramble == 1 | qb_hit == 1 | qbh_inc == 1 | qb_int == 1 ) %>%
+filter(sack == 1 | tackled_for_loss == 1 |(yards_gained <= 2 & play_type == "run")|  qb_scramble == 1 | qb_hit == 1 | qbh_inc == 1 | qb_int == 1 ) %>%
 summarize(pit.total = n(),
 pit.sum.wpa = sum(wpa, na.rm = T),
-pit.avg.wpa = (pit.sum.wpa / pit.total) * 100)
+pit.avg.wpa = (pit.sum.wpa / pit.total) * 100)   # the & statements eliminate kicks?
 
 off.line.avg.NPIT <- pbp %>%
 group_by(week) %>%
 filter(season == 2020 & week <= 17 & posteam != "PIT") %>%
-filter(sack == 1 | tackled_for_loss == 1 | yards_gained <= 2 | qb_scramble == 1 | qb_hit == 1 | qbh_inc == 1 | qb_int == 1 ) %>%
+filter(sack == 1 | tackled_for_loss == 1 |(yards_gained <= 2 & play_type == "run") | qb_scramble == 1 | qb_hit == 1 | qbh_inc == 1 | qb_int == 1 ) %>%
 summarize(nfl.total = n(),
 nfl.avg.wpa = (sum(wpa, na.rm = T) / nfl.total) * 100)
 
