@@ -1,3 +1,9 @@
+install.packages(tidyverse)
+install.packages(ggrepel)
+install.packages(ggimage)
+install.packages(nflfastR)
+
+
 library(tidyverse)
 library(ggrepel)
 library(ggimage)
