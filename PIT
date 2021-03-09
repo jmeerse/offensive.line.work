@@ -36,13 +36,13 @@ pit.avg.wpa = (pit.sum.wpa / pit.total) * 100)   # the & statements eliminate ki
 
 #creates data for all teams over regular season - maybe want to modify qb scrambles and hits to limit yards
 off.line <- pbp %>%
-+     group_by(week, posteam) %>%
-+     filter(season == 2020 & week <= 17) %>%
-+     
-+     filter(sack == 1 | tackled_for_loss == 1 |(yards_gained <= 2 & play_type == "run")|  qb_scramble == 1 | qb_hit == 1 | qbh_inc == 1 | qb_int == 1 ) %>%
-+     summarize(total = n(),
-+               sum.wpa = sum(wpa, na.rm = T),
-+               avg.wpa = (sum.wpa / total) * 100)   # the & statements eliminate kicks?
+    group_by(week, posteam) %>%
+     filter(season == 2020 & week <= 17) %>%
+     
+     filter(sack == 1 | tackled_for_loss == 1 |(yards_gained <= 2 & play_type == "run")|  qb_scramble == 1 | qb_hit == 1 | qbh_inc == 1 | qb_int == 1 ) %>%
+     summarize(total = n(),
+               sum.wpa = sum(wpa, na.rm = T),
+               avg.wpa = (sum.wpa / total) * 100)   # the & statements eliminate kicks?
 
 #filters off.line by certain teams - here 3 teams 
 threeteams <- off.line %>% filter(posteam == "KC" | posteam == "TEN" | posteam == "CAR")
