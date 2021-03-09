@@ -44,15 +44,17 @@ off.line <- pbp %>%
                sum.wpa = sum(wpa, na.rm = T),
                avg.wpa = (sum.wpa / total) * 100)   # the & statements eliminate kicks?
 
-#filters off.line by certain teams - here 3 teams 
-threeteams <- off.line %>% filter(posteam == "KC" | posteam == "TEN" | posteam == "CAR")
+#filters off.line to an individual team
+DAL <- off.line %>% filter(posteam == "DAL")
 
 
 #line plot of all teams with 2 teams highlighted
 ggplot(data=off.line, aes(x=`week`, y=`avg.wpa`, group=`posteam`)) +
   geom_line(color="grey", alpha = 0.5) +
   geom_line(data = PIT, colour = "gold") +
-  geom_line(data = DAL, colour = "#002244")
+  geom_line(data = DAL, colour = "#002244") +
+  ggtitle("PIT and DAL") +
+  geom_hline(yintercept = meannfl)
 
 
 #line plot of avg.wpa by week here for 3 teams
