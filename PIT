@@ -47,6 +47,8 @@ off.line <- pbp %>%
 #filters off.line to an individual team
 DAL <- off.line %>% filter(posteam == "DAL")
 
+#calculates the average wpa for all teams
+meannfl <- mean(off.line$avg.wpa)
 
 #line plot of all teams with 2 teams highlighted
 ggplot(data=off.line, aes(x=`week`, y=`avg.wpa`, group=`posteam`)) +
