@@ -25,6 +25,73 @@ case_when(qb_hit == 1 & incomplete_pass == 1 ~ "1")) %>%
 mutate(qb_int =
 case_when(interception == 1 & qb_hit == 1 ~ "1"))
 
+
+#all qualifying plays
+off.line.allplays <- pbp %>%
+     filter(season == 2020 & week <= 17) %>%
+     filter(sack == 1 | tackled_for_loss == 1 |(yards_gained <= 2 & play_type == "run")|  qb_scramble == 1 | qb_hit == 1 | qbh_inc == 1 | qb_int == 1 )    # the & statements eliminate kicks?
+
+
+#list of all teams
+teams <- unique(off.line.allplays$posteam)
+
+#for loop to create data frames for each team, fills data frame (df) with all team data by rbind
+#create sum_wpa for each team's o-line cumulative WPA for the season
+#should see separate team listings
+for (i in teams){
+     df <- rbind(df, assign(paste0(tolower(i)),
+                            off.line.allplays %>%
+                                filter(posteam==i)%>%
+                                mutate(
+                                    sum_wpa = cumsum(wpa)
+                                ) %>% 
+                                select(posteam, sum_wpa))
+     )
+ }
+
+  
+  #create logos_df from df. this data frame will contain coordinates that will tell ggplot where to plot team logos
+ #summarise by team, x coordinate = last offensive play in the sequence, y coordinate = cumulative WPA on final play
+ logos_df <- df %>%
+     group_by(posteam) %>%
+     summarise(
+         tot_wpa = last(sum_wpa),
+         last_play = max(play_num)
+     ) %>%
+     left_join(teams_colors_logos, by=c("posteam"="team_abbr"))
+> View(logos_df)
+
+#define new plot: off_deficiency
+off_deficiency <- ggplot()+
+  geom_hline(yintercept=0, size=1, color="black")+
+  geom_line(aes(x=df$play_num, y=df$sum_wpa,color=df$posteam,alpha=ifelse(df$posteam=="PIT"|df$posteam=="CLE", 1, .8)),size=1.5, show.legend = FALSE)+
+  geom_image(aes(x=logos_df$last_play, y=logos_df$tot_wpa, image = logos_df$team_logo_espn), size = 0.045, by = "width", asp = 16/9)+
+  scale_color_manual(values=c("ARI"="#97233f", "ATL"="#a71930", "BAL"="#241773", "BUF"="#00338d", "CAR"="#0085ca","CHI"="#0b162a","CIN"="#000000","CLE"="#fb4f14",
+                              "DAL"="#002244", "DEN"="#002244","DET"="#005a8b", "GB"="#203731","HOU"="#03202f","IND"="#002c5f", "JAX"="#000000","KC"="#e31837",
+                              "LAC"="#002244","LA"="#002244","MIA"="#008e97","MIN"="#4f2683","NE"="#002244","NO"="#9f8958","NYG"="#0b2265","NYJ"="#125740","OAK"="#a5acaf",
+                              "PHI"="#004953","PIT"="#000000","SD"="#002244","SF"="#aa0000","SEA"="#69be28","STL"="#002244","TB"="#d50a0a","TEN"="#4095d1","WAS"="#773141")) +
+  scale_x_continuous(breaks=seq(0,500,50), expand=c(.02,0))+
+  scale_y_continuous(breaks=seq(-200,800,50), expand=c(.01,0))+
+  theme_bw() +
+  theme(panel.background=element_blank()) +
+  theme(plot.background=element_rect(fill="#FFFFFF")) +
+  theme(panel.border = element_blank()) +
+  theme(panel.grid.major= element_blank()) +
+  theme(axis.text.x=element_text(angle = 50, vjust = 0.5,    size=11,colour="#535353",face="bold")) +
+  theme(axis.text.y=element_text(size=11,colour="#535353",face="bold")) +
+  theme(axis.title.y=element_text(size=11,colour="#535353",face="bold",vjust=1.5)) +
+  theme(axis.title.x=element_text(size=11,colour="#535353",face="bold",vjust=-.5)) +
+  theme(plot.title=element_text(face="bold", colour="#006ebb",size=18, family = "Dense")) +
+  theme(plot.subtitle=element_text(colour = "#006ebb", size = 12, family = "Dense")) +
+  theme(axis.ticks = element_blank()) +
+  theme(aspect.ratio = 9 / 16) +
+  xlab("Total Number of Plays") +
+  ylab("Cumulative WPA")
+
+#plot off_deficiency
+plot(off_deficiency)
+
+
 off.line.PIT <- pbp %>%
 group_by(week) %>%
 filter(season == 2020 & week <= 17) %>%
