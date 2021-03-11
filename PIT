@@ -29,11 +29,13 @@ case_when(interception == 1 & qb_hit == 1 ~ "1"))
 #all qualifying plays
 off.line.allplays <- pbp %>%
      filter(season == 2020 & week <= 17) %>%
-     filter(sack == 1 | tackled_for_loss == 1 |(yards_gained <= 2 & play_type == "run")|  qb_scramble == 1 | qb_hit == 1 | qbh_inc == 1 | qb_int == 1 )    # the & statements eliminate kicks?
-
+     filter((sack == 1 | tackled_for_loss == 1 |(yards_gained <= 2 & play_type == "run")|  qb_scramble == 1 | qb_hit == 1 | qbh_inc == 1 | qb_int == 1) & wpa != "NA" )    # the & statements eliminate kicks?
 
 #list of all teams
 teams <- unique(off.line.allplays$posteam)
+
+#define empty data frame
+df <- data.frame()
 
 #for loop to create data frames for each team, fills data frame (df) with all team data by rbind
 #create sum_wpa for each team's o-line cumulative WPA for the season
@@ -49,6 +51,13 @@ for (i in teams){
      )
  }
 
+#mutate df, add variable "play_num" to count the number of total offensive plays run by each team
+df <- df %>% 
+  group_by(posteam) %>% 
+  mutate(
+    play_num = seq_along(posteam)
+  )   
+  
   
   #create logos_df from df. this data frame will contain coordinates that will tell ggplot where to plot team logos
  #summarise by team, x coordinate = last offensive play in the sequence, y coordinate = cumulative WPA on final play
@@ -59,7 +68,7 @@ for (i in teams){
          last_play = max(play_num)
      ) %>%
      left_join(teams_colors_logos, by=c("posteam"="team_abbr"))
-> View(logos_df)
+View(logos_df)
 
 #define new plot: off_deficiency
 off_deficiency <- ggplot()+
