@@ -131,7 +131,7 @@ ggplot(data=off.line, aes(x=`week`, y=`avg.wpa`, group=`posteam`)) +
   geom_line(color="grey", alpha = 0.5) +
   geom_line(data = PIT, colour = "gold") +
   geom_line(data = DAL, colour = "#002244") +
-  ggtitle("PIT and DAL") +
+  ggtitle("PIT and DAL", subtitle = "Weekly Offensive Line WPA") +
   geom_hline(yintercept = meannfl)
 
 
