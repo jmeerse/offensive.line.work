@@ -120,6 +120,11 @@ off.line <- pbp %>%
                sum.wpa = sum(wpa, na.rm = T),
                avg.wpa = (sum.wpa / total) * 100)   # the & statements eliminate kicks?
 
+#ranks teams by weekly performace - lower numbers are better (1 = worst performance, 32 = best)
+off.line <- off.line %>% 
+               group_by(week) %>%
+               mutate(weekly.rank = rank(avg.wpa))               
+
 #filters off.line to an individual team
 DAL <- off.line %>% filter(posteam == "DAL")
 
