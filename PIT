@@ -31,12 +31,13 @@ off.line.allplays <- pbp %>%
      filter(season == 2020 & week <= 17) %>%
      filter((sack == 1 | tackled_for_loss == 1 |(yards_gained <= 2 & play_type == "run")|  qb_scramble == 1 | qb_hit == 1 | qbh_inc == 1 | qb_int == 1) & wpa != "NA" )    # the & statements eliminate kicks?
 
-#list of all teams
+#list of all teams - to make cumulative graphs
 teams <- unique(off.line.allplays$posteam)
 
-#define empty data frame
+#define empty data frame - to make cumulative graphs
 df <- data.frame()
 
+# to make cumulative graphs
 #for loop to create data frames for each team, fills data frame (df) with all team data by rbind
 #create sum_wpa for each team's o-line cumulative WPA for the season
 #should see separate team listings
@@ -58,7 +59,7 @@ df <- df %>%
     play_num = seq_along(posteam)
   )   
   
-  
+ 
   #create logos_df from df. this data frame will contain coordinates that will tell ggplot where to plot team logos
  #summarise by team, x coordinate = last offensive play in the sequence, y coordinate = cumulative WPA on final play
  logos_df <- df %>%
@@ -70,6 +71,7 @@ df <- df %>%
      left_join(teams_colors_logos, by=c("posteam"="team_abbr"))
 View(logos_df)
 
+#- to make cumulative graphs
 #define new plot: off_deficiency
 off_deficiency <- ggplot()+
   geom_hline(yintercept=0, size=1, color="black")+
@@ -97,6 +99,7 @@ off_deficiency <- ggplot()+
   xlab("Total Number of Plays") +
   ylab("Cumulative WPA")
 
+#- to make cumulative graphs
 #plot off_deficiency
 plot(off_deficiency)
 
