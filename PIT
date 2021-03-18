@@ -26,7 +26,7 @@ mutate(qb_int =
 case_when(interception == 1 & qb_hit == 1 ~ "1"))
 
 
-#all qualifying plays
+#all qualifying plays for 2020 regular season - can change season and week
 off.line.allplays <- pbp %>%
      filter(season == 2020 & week <= 17) %>%
      filter((sack == 1 | tackled_for_loss == 1 |(yards_gained <= 2 & play_type == "run")|  qb_scramble == 1 | qb_hit == 1 | qbh_inc == 1 | qb_int == 1) & wpa != "NA" )    # the & statements eliminate kicks?
@@ -134,13 +134,14 @@ off.line <- off.line %>%
 #filters off.line to an individual team
 DAL <- off.line %>% filter(posteam == "DAL")
 
+#saves DAL as a csv file, can export to computer and use as spreadsheet
+write.csv(DAL, "DAl.csv")
+
 
 
 #calculates the average wpa for all teams over entire season to show on graph
 meannfl <- mean(off.line$avg.wpa)
-
-#calculates ave wpa for just DAL
-meanDALwpa <- mean(DAL$avg.wpa)
+meanDALwpa <- mean(DAL$avg.wpa)  #calculates ave wpa for just DAL
 
 #logo and color for team
 Dal_logo <- dplyr::filter(teams_colors_logos, team_abbr == "DAL")
