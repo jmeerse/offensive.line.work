@@ -120,30 +120,40 @@ off.line <- pbp %>%
                sum.wpa = sum(wpa, na.rm = T),
                avg.wpa = (sum.wpa / total) * 100)   # the & statements eliminate kicks?
 
-#ranks teams by weekly performace - lower numbers are better (1 = worst performance, 32 = best)
+#ranks teams by weekly performace - subtracting from 33 means higher numbers are better bc rank command ranks lowest = 1 but lowest is worst here
 off.line <- off.line %>% 
                group_by(week) %>%
-               mutate(weekly.rank = rank(avg.wpa))               
-
+               mutate(weekly.rank = 33 - rank(avg.wpa)) %>%
+               mutate(nfl.avg.wpa = mean(avg.wpa)) %>%
+               mutate(nfl.sd.wpa = sd(avg.wpa))
+               mutate(z.score = (avg.wpa - nfl.avg.wpa) / nfl.sd.wpa) 
+ 
 #filters off.line to an individual team
 DAL <- off.line %>% filter(posteam == "DAL")
 
 #creates logo file for a team
 DAL_logo <-filter(logos_df, `posteam`== "DAL")
 
-#calculates the average wpa for all teams
+#calculates the average wpa for all teams over entire season to show on graph
 meannfl <- mean(off.line$avg.wpa)
 
-#line plot of all teams with 2 teams highlighted - last line adds team logo at end  
-ggplot(data=off.line, aes(x=`week`, y=`avg.wpa`, group=`posteam`)) +
-  geom_line(color="grey", alpha = 0.5) +
-  geom_line(data = PIT, colour = "#000000") +
-  geom_line(data = DAL, colour = "#002244") +
-  ggtitle("PIT and DAL", subtitle = "Weekly Offensive Line WPA") +
-  geom_hline(yintercept = meannfl) +
-  geom_image(aes(x = last(DAL$week), y = last(DAL$avg.wpa), image = DAL_logo$team_logo_espn ))
+#calculates ave wpa for just DAL
+meanDALwpa <- mean(DAL$avg.wpa)
 
-#line plot of avg.wpa by week here for 3 teams
+#line plot of all teams with 1 team highlighted - last line adds team logo at end - have to have logo file created  
+ggplot(data=off.line, aes(x=`week`, y=`avg.wpa`, group=`posteam`)) +
+     geom_line(color="grey", alpha = 0.5) +
+     geom_point(data = DAL) +
+     geom_line(data = DAL, colour = "#002244") +
+     ggtitle("DAL", subtitle = "Weekly Offensive Line WPA (Dal avg dotted)") +
+     geom_hline(yintercept = meannfl) +  
+     geom_hline(yintercept = meanDALwpa, linetype = "dashed") +
+     geom_image(aes(x = last(DAL$week), y = last(DAL$avg.wpa), image = DAL_logo$team_logo_espn ))
+
+#filter to 3 teams
+threeteams <- off.line %>% filter(posteam == "KC" | posteam == "TEN" | posteam == "CAR")
+
+#line plot of avg.wpa by week  for 3 teams
 ggplot(data=threeteams, aes(x=`week`, y=`avg.wpa`, group=`posteam`)) +
   geom_line(aes(color=`posteam`)) +
   geom_point() +
