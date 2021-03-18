@@ -134,8 +134,7 @@ off.line <- off.line %>%
 #filters off.line to an individual team
 DAL <- off.line %>% filter(posteam == "DAL")
 
-#creates logo file for a team
-DAL_logo <-filter(logos_df, `posteam`== "DAL")
+
 
 #calculates the average wpa for all teams over entire season to show on graph
 meannfl <- mean(off.line$avg.wpa)
