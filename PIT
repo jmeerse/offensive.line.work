@@ -143,6 +143,9 @@ meannfl <- mean(off.line$avg.wpa)
 #calculates ave wpa for just DAL
 meanDALwpa <- mean(DAL$avg.wpa)
 
+#logo and color for team
+Dal_logo <- dplyr::filter(teams_colors_logos, team_abbr == "DAL")
+
 #line plot of all teams with 1 team highlighted - last line adds team logo at end - have to have logo file created  
 ggplot(data=off.line, aes(x=`week`, y=`avg.wpa`, group=`posteam`)) +
      geom_line(color="grey", alpha = 0.5) +
@@ -151,7 +154,7 @@ ggplot(data=off.line, aes(x=`week`, y=`avg.wpa`, group=`posteam`)) +
      ggtitle("DAL", subtitle = "Weekly Offensive Line WPA (Dal avg dotted)") +
      geom_hline(yintercept = meannfl) +  
      geom_hline(yintercept = meanDALwpa, linetype = "dashed") +
-     geom_image(aes(x = last(DAL$week), y = last(DAL$avg.wpa), image = DAL_logo$team_logo_espn ))
+     geom_image(aes(x = last(DAL$week), y = last(DAL$avg.wpa), image = Dal_logo$team_logo_espn ))
 
 #filter to 3 teams
 threeteams <- off.line %>% filter(posteam == "KC" | posteam == "TEN" | posteam == "CAR")
