@@ -159,6 +159,7 @@ ggplot(data=threeteams, aes(x=`week`, y=`avg.wpa`, group=`posteam`)) +
   geom_point() +
   geom_hline(yintercept = meannfl)
 
+#not sure we're using this anymore - this would be used to calculate the rest of the NFL to be able to make comparisons
 off.line.avg.NPIT <- pbp %>%
 group_by(week) %>%
 filter(season == 2020 & week <= 17 & posteam != "PIT") %>%
@@ -166,6 +167,7 @@ filter(sack == 1 | tackled_for_loss == 1 |(yards_gained <= 2 & play_type == "run
 summarize(nfl.total = n(),
 nfl.avg.wpa = (sum(wpa, na.rm = T) / nfl.total) * 100)
 
+#not sure we're using this anymore - this measures a team against the rest of the NFL by week
 combined <- left_join(off.line.PIT, off.line.avg.NPIT, by = c("week" = "week"))
 combined <- combined %>%
 group_by(week) %>%
