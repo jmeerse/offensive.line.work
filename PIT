@@ -128,7 +128,7 @@ off.line <- off.line %>%
                group_by(week) %>%
                mutate(weekly.rank = 33 - rank(avg.wpa)) %>%
                mutate(nfl.avg.wpa = mean(avg.wpa)) %>%
-               mutate(nfl.sd.wpa = sd(avg.wpa))
+               mutate(nfl.sd.wpa = sd(avg.wpa)) %>%
                mutate(z.score = (avg.wpa - nfl.avg.wpa) / nfl.sd.wpa) 
  
 #filters off.line to an individual team
