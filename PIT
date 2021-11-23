@@ -9,6 +9,7 @@ library(ggrepel)
 library(ggimage)
 library(nflfastR)
 
+#load seasons one way
 seasons <- 2019:2020
 pbp <- map_df(seasons, function(x) {
 readRDS(
@@ -17,6 +18,9 @@ paste0("https://raw.githubusercontent.com/guga31bb/nflfastR-data/master/data/pla
 )
 )
 })
+
+#or load this way
+pbp_21 <- load_pbp(2021)
 
 pbp <- pbp %>%
 mutate(
